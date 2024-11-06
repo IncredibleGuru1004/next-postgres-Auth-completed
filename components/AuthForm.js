@@ -3,30 +3,68 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 
-function AuthForm({ onSubmit, handleGoogleSignIn, mode}) {
+function AuthForm({ onSubmit, handleGoogleSignIn, mode }) {
   const isLogin = mode === 'login';
-
+  
   const [formFields, setFormFields] = useState({ name: "", email: "", password: "" });
   const [errors, setErrors] = useState({ name: "", email: "", password: "" });
 
+  const validateEmail = (email) => {
+    return email.includes('@');
+  };
+
+  const validateName = (name) => {
+    return name.trim() !== "";
+  };
+
+  const validatePassword = (password) => {
+    return password.length >= 8;
+  };
+
   const validateForm = () => {
     const newErrors = {};
-
-    if (!isLogin && formFields.name.trim() === "") {
+    
+    if (!isLogin && !validateName(formFields.name)) {
       newErrors.name = "Name is required.";
     }
 
-    if (!formFields.email.includes('@')) {
-      newErrors.email = "Email is invalid.";
+    if (!validateEmail(formFields.email)) {
+      newErrors.email = "Email is invalid. Example: aaa@example.com";
     }
 
-    if (formFields.password.length < 8) {
+    if (!validatePassword(formFields.password)) {
       newErrors.password = "Password must be at least 8 characters long.";
     }
 
     setErrors(newErrors);
-
+    
     return Object.keys(newErrors).length === 0; // No errors implies form is valid
+  };
+
+  const handleChange = (field) => (e) => {
+    const value = e.target.value;
+    setFormFields({ ...formFields, [field]: value });
+
+    // Validate field on change
+    if (field === 'email') {
+      if (!validateEmail(value)) {
+        setErrors({ ...errors, email: "Email is invalid. Example: aaa@example.com" });
+      } else {
+        setErrors({ ...errors, email: "" });
+      }
+    } else if (field === 'name' && !isLogin) {
+      if (!validateName(value)) {
+        setErrors({ ...errors, name: "Name is required." });
+      } else {
+        setErrors({ ...errors, name: "" });
+      }
+    } else if (field === 'password') {
+      if (!validatePassword(value)) {
+        setErrors({ ...errors, password: "Password must be at least 8 characters long." });
+      } else {
+        setErrors({ ...errors, password: "" });
+      }
+    }
   };
 
   const handleSubmit = (e) => {
@@ -42,7 +80,7 @@ function AuthForm({ onSubmit, handleGoogleSignIn, mode}) {
         <h2 className="text-2xl font-bold mb-6 text-center">
           {isLogin ? 'Login' : 'Register'}
         </h2>
-        <form onSubmit={handleSubmit}>
+        <form onSubmit={handleSubmit} noValidate>
           {!isLogin && (
             <div className="mb-4">
               <label
@@ -57,8 +95,8 @@ function AuthForm({ onSubmit, handleGoogleSignIn, mode}) {
                 type="text"
                 placeholder="Name"
                 value={formFields.name}
-                onChange={(e) => setFormFields({ ...formFields, name: e.target.value })}
-                required
+                onChange={handleChange('name')}
+                
               />
               {errors.name && <p className="text-red-500 text-xs italic">{errors.name}</p>}
             </div>
@@ -76,8 +114,8 @@ function AuthForm({ onSubmit, handleGoogleSignIn, mode}) {
               type="email"
               placeholder="Email"
               value={formFields.email}
-              onChange={(e) => setFormFields({ ...formFields, email: e.target.value })}
-              required
+              onChange={handleChange('email')}
+              
             />
             {errors.email && <p className="text-red-500 text-xs italic">{errors.email}</p>}
           </div>
@@ -94,8 +132,8 @@ function AuthForm({ onSubmit, handleGoogleSignIn, mode}) {
               type="password"
               placeholder="********"
               value={formFields.password}
-              onChange={(e) => setFormFields({ ...formFields, password: e.target.value })}
-              required
+              onChange={handleChange('password')}
+              
             />
             {errors.password && <p className="text-red-500 text-xs italic">{errors.password}</p>}
           </div>
