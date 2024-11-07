@@ -8,6 +8,7 @@ import useAuth from "@/hook/useAuth";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import { signOut } from "next-auth/react";
+import { apiAuth } from "@/lib/authapi";
 
 const Page = () => {
   const router = useRouter()
@@ -17,33 +18,24 @@ const Page = () => {
 
   useAuth();
   useEffect(() => {
+    console.log('==========================')
     const fetchUsers = async () => {
-      try {
-        const response = await axios.get(`/api/users/`);
-        dispatch(setUsers(response.data));
-      } catch (error) {
-        console.error("Failed to fetch users:", error);
-      }
+      const data = await apiAuth(`/api/users/`, 'get')
+      dispatch(setUsers(data))
     };
 
     fetchUsers();
   }, [])
 
   const handleSaveUser = async ({ name, email, role }) => {
-    try {
-      if (editingUser) {
-        console.log({editingUser})
-        const response = await axios.put(`/api/users?id=${editingUser.id}`, {name, email, role})
-        const updatedUser = response.data;
-        dispatch(updateUser(updatedUser));
-        setEditingUser(null);
-      } else {
-        const response = await axios.post('/api/users', {name, email, role, password:"1234567890"});
-        const newUser = response.data
-        dispatch(addUser(newUser));
-      }
-    } catch (error) {
-      console.error("Error saving User:", error);
+
+    if (editingUser) {
+      const data = await apiAuth(`/api/users?id=${editingUser.id}`, "put", { name, email, role })
+      dispatch(updateUser(data))
+      setEditingUser(null)
+    } else {
+      const data = await apiAuth('/api/users', 'post', { name, email, role, password: "1234567890" })
+      dispatch(addUser(data))
     }
   };
 
@@ -52,15 +44,12 @@ const Page = () => {
   };
 
   const handleDeleteUser = async (id) => {
-    try {
-      const response  = await axios.delete(`/api/users?id=${id}`)
-      dispatch(deleteUser({ id }));
-    } catch (error) {
-
-    }
+    await apiAuth(`/api/users?id=${id}`, 'delete')
+    dispatch(deleteUser({ id }));
   };
   const handleLogout = async () => {
-    await signOut({callbackUrl:'/login'})
+    localStorage.removeItem("token")
+    await signOut({ callbackUrl: '/login' })
   };
 
   return (

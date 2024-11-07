@@ -17,10 +17,14 @@ export default function LoginPage() {
       try {
         const response = await axios.post('/api/auth/login', { email, name, password: "Google" });
         if (response.status === 200) {
+          const { token, user } = response.data;
+          localStorage.setItem('token', token);
           router.push('/dashboard')
         }
       } catch (error) {
         if (error.status === 409) {
+          const { token, user } = error.response.data;
+          localStorage.setItem('token', token);
           router.push('/dashboard')
         }
       }
