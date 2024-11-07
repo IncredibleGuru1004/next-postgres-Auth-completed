@@ -2,21 +2,17 @@ import { hashPassword, verifyToken } from "@/lib/auth";
 import User from "@/model/User";
 import { NextResponse } from "next/server";
 
-const authenticateRequest = (req) => {
-    const token = req.headers.get('authorization')?.split(' ')[1];
-    if (!token) {
-        return NextResponse.json({ error: "Token not provided" }, { status: 401 });
-    }
-    return verifyToken(token);
-};
-
 export async function GET(req) {
     try {
-        const user = authenticateRequest(req);
-        if (!user) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-
+        console.log('==========================')
+        // const token = req.headers.get('authorization')?.split(' ')[1];
+        // if (!token) {
+        //     return NextResponse.json({ error: "Token not provided" }, { status: 401 });
+        // }
+        // const user = verifyToken(token)
+        // if (!user) {
+        //     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+        // }
         const users = await User.findAll();
         users.sort((a, b) => a.id - b.id);
         return NextResponse.json(users, { status: 200 });
@@ -28,7 +24,11 @@ export async function GET(req) {
 
 export async function POST(req) {
     try {
-        const user = authenticateRequest(req);
+        const token = req.headers.get('authorization')?.split(' ')[1];
+        if (!token) {
+            return NextResponse.json({ error: "Token not provided" }, { status: 401 });
+        }
+        const user = verifyToken(token)
         if (!user) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
@@ -52,7 +52,11 @@ export async function POST(req) {
 
 export async function PUT(req) {
     try {
-        const user = authenticateRequest(req);
+        const token = req.headers.get('authorization')?.split(' ')[1];
+        if (!token) {
+            return NextResponse.json({ error: "Token not provided" }, { status: 401 });
+        }
+        const user = verifyToken(token)
         if (!user) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
@@ -85,7 +89,11 @@ export async function PUT(req) {
 
 export async function DELETE(req) {
     try {
-        const user = authenticateRequest(req);
+        const token = req.headers.get('authorization')?.split(' ')[1];
+        if (!token) {
+            return NextResponse.json({ error: "Token not provided" }, { status: 401 });
+        }
+        const user = verifyToken(token)
         if (!user) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
         }
