@@ -49,9 +49,7 @@ const Page = () => {
     }
   }
 
-  // useAuth();
   useEffect(() => {
-    console.log('==========================')
     const fetchUsers = async () => {
       const data = await apiAuth(`/api/users/`, 'get')
       dispatch(setUsers(data))
@@ -106,4 +104,4 @@ const Page = () => {
   );
 };
 
-export default Page;
+export default useAuth(Page);

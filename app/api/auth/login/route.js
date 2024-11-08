@@ -1,4 +1,4 @@
-import { comparePasswords, generateToken } from "@/lib/auth";
+import { comparePasswords, generateToken, verifyToken } from "@/lib/auth";
 import User from "@/model/User";
 import { NextResponse } from "next/server";
 
@@ -26,7 +26,10 @@ export async function POST(req) {
         return NextResponse.json({ error: 'Invalid credentials!' }, { status: 401 });
       }
       
-      const token = generateToken({ id: existingUser.id, email: existingUser.email });
+      const token = await generateToken({ id: existingUser.id, email: existingUser.email });
+      console.log('***********************', token)
+      const uuu = await verifyToken(token)
+      console.log('***********************', uuu)
       return NextResponse.json({ token, user: existingUser }, { status: 200 });
     }
 

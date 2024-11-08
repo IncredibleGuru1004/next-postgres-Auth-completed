@@ -4,15 +4,6 @@ import { NextResponse } from "next/server";
 
 export async function GET(req) {
     try {
-        console.log('==========================')
-        // const token = req.headers.get('authorization')?.split(' ')[1];
-        // if (!token) {
-        //     return NextResponse.json({ error: "Token not provided" }, { status: 401 });
-        // }
-        // const user = verifyToken(token)
-        // if (!user) {
-        //     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        // }
         const users = await User.findAll();
         users.sort((a, b) => a.id - b.id);
         return NextResponse.json(users, { status: 200 });
@@ -24,15 +15,6 @@ export async function GET(req) {
 
 export async function POST(req) {
     try {
-        const token = req.headers.get('authorization')?.split(' ')[1];
-        if (!token) {
-            return NextResponse.json({ error: "Token not provided" }, { status: 401 });
-        }
-        const user = verifyToken(token)
-        if (!user) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-
         const data = await req.json(); // Parse incoming JSON request
         const { name, password, email, role } = data;
 
@@ -52,15 +34,6 @@ export async function POST(req) {
 
 export async function PUT(req) {
     try {
-        const token = req.headers.get('authorization')?.split(' ')[1];
-        if (!token) {
-            return NextResponse.json({ error: "Token not provided" }, { status: 401 });
-        }
-        const user = verifyToken(token)
-        if (!user) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-
         const id = new URL(req.url).searchParams.get('id');
         if (!id) {
             console.warn("User ID not provided");
@@ -89,15 +62,6 @@ export async function PUT(req) {
 
 export async function DELETE(req) {
     try {
-        const token = req.headers.get('authorization')?.split(' ')[1];
-        if (!token) {
-            return NextResponse.json({ error: "Token not provided" }, { status: 401 });
-        }
-        const user = verifyToken(token)
-        if (!user) {
-            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-        }
-
         const id = new URL(req.url).searchParams.get('id');
         if (!id) {
             console.warn("User ID not provided");
