@@ -76,6 +76,7 @@ const Page = () => {
 
   const handleDeleteUser = async (id) => {
     await apiAuth(`/api/users?id=${id}`, 'delete')
+    setEditingUser(null)
     dispatch(deleteUser({ id }));
   };
   const handleLogout = async () => {

@@ -15,11 +15,28 @@ const UserForm = ({ onSave, user }) => {
 
   const validateFields = () => {
     const newErrors = { name: "", email: "" };
-    if (!formFields.name) newErrors.name = "Name is required.";
-    if (!formFields.email) newErrors.email = "Email is required.";
+    
+    // Check if the name field is empty
+    if (!formFields.name) {
+      newErrors.name = "Name is required.";
+    }
+  
+    // Check if the email field is empty
+    if (!formFields.email) {
+      newErrors.email = "Email is required.";
+    } else {
+      // Use a regex to validate basic email format
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(formFields.email)) {
+        newErrors.email = "Invalid email address.";
+      }
+    }
+  
     setErrors(newErrors);
+    // Return true if there are no errors, false otherwise
     return !newErrors.name && !newErrors.email;
   };
+  
 
   const handleSubmit = (e) => {
     e.preventDefault();
